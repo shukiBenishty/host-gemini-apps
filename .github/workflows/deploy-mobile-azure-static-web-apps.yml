@@ -12,6 +12,7 @@ jobs:
       - name: Checkout host (with submodule)
         uses: actions/checkout@v4
         with:
+          token: ${{ secrets.SUBMODULE_PAT }}
           submodules: recursive
 
       - name: Fetch latest UI main SHA
