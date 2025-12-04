@@ -21,7 +21,6 @@ jobs:
           cd mobile-ui-module
           git fetch origin main
           echo "sha=$(git rev-parse origin/main)" >> $GITHUB_OUTPUT
-          cd ..
 
       - name: Compare to last deployed SHA
         id: cache
@@ -52,7 +51,6 @@ jobs:
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          cd mobile-ui-module
           npm i
 
       - name: Build
