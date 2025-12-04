@@ -14,6 +14,7 @@ jobs:
         with:
           token: ${{ secrets.SUBMODULE_PAT }}
           submodules: recursive
+          fetch-depth: 1
 
       - name: Fetch latest UI main SHA
         id: ui
@@ -21,6 +22,7 @@ jobs:
           cd mobile-ui-module
           git fetch origin main
           echo "sha=$(git rev-parse origin/main)" >> $GITHUB_OUTPUT
+          cd ..
 
       - name: Compare to last deployed SHA
         id: cache
@@ -37,24 +39,33 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: echo "${{ steps.ui.outputs.sha }}" > .last-ui-sha
 
-      - name: Setup Node.js
+      - name: Setup Node.js (for UI only)
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 20.19.0
-          cache: npm
+          # בלי cache כי אין lockfile
 
-      - name: Run Sync Script
+      - name: Update UI submodule to latest main
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          cd mobile-ui-module
+          git checkout main
+          git pull origin main
+          cd ..
+
+      - name: Run Sync Script (host-side manipulation)
         if: steps.cache.outputs.cache-hit != 'true'
         run: node ./scripts/mobile-ui.mjs
 
-      - name: Install dependencies
+      - name: Install UI dependencies (inside submodule)
         if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm i
+        working-directory: mobile-ui-module
+        run: npm i
 
-      - name: Build
+      - name: Build UI (inside submodule)
         if: steps.cache.outputs.cache-hit != 'true'
+        working-directory: mobile-ui-module
         run: npm run build
 
       - name: Deploy to Azure Static Web Apps
