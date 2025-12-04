@@ -1,0 +1,3 @@
+[submodule "mobile-ui-module"]
+	path = mobile-ui-module
+	url = https://github.com/shukiBenishty/geminiApp-mobile.git
