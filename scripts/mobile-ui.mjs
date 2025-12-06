@@ -21,11 +21,6 @@ const MOBILE_DST = path.resolve(__dirname, "../mobile-ui-module");
 
 async function main() {
   await copyDirOverwrite(HOST_MOBILE_SRC, MOBILE_DST);
-  
-  await rename(
-    path.join(MOBILE_DST, "manifest.json"),
-    path.join(MOBILE_DST, "public/manifest.json")
-  );
 
   console.log("✅ UI synced into mobile-ui-module");
 }
