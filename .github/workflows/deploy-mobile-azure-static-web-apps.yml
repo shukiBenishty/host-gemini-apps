@@ -34,21 +34,7 @@ jobs:
         with:
           path: .last-ui-sha
           key: ui-sha-${{ steps.ui.outputs.sha }}
-          
-      # חדש: אם אין שינוי — מבטלים את כל ה-workflow
-      - name: Cancel workflow if no UI change
-        if: steps.cache.outputs.cache-hit == 'true'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.CANCEL_PAT }}
-          script: |
-            core.info('No UI change. Cancelling workflow run...')
-            await github.rest.actions.cancelWorkflowRun({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              run_id: context.runId
-            })
-            
+        
       - name: Stop if no change
         if: steps.cache.outputs.cache-hit == 'true'
         run: echo "No UI change, skipping deploy."
